@@ -1,0 +1,402 @@
+<html>
+    <head>
+        <title>speed typing game</title>
+        <style>
+            body{
+                background-color: #1d1f23;
+            }
+
+            h1{
+                text-align: center;
+                color: white;
+                font-family: helvetica;
+            }
+
+            p{
+                color: white;
+                font-family: helvetica;
+                font-size: large;
+                
+                
+            }
+
+            #left{
+                /* text-align: center; */
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                margin-top: 20px;
+                margin-left: 50px;
+            }
+
+            #sec{
+                margin-left: 22px;
+                font-size: large;
+            }
+
+            #right{
+
+                margin-left: 1200px;
+                display:flex;
+               
+
+            }
+
+            #high{
+                margin-left: 100px;
+            }
+
+            
+            #input-user{
+                text-align: center;
+                
+            }
+
+            #input {
+                font-family: Helvetica;
+                position: relative;
+                width: 400px;
+                border-radius: 30px;
+                background-color: #222a38; 
+                outline: none;
+                box-shadow: 2px 10px 30px rgba(0, 0, 0, 0.5);
+                padding: 14px 12px;
+                text-align: center;
+                color: black;
+                font-weight: bold;
+                font-size: 14pt;
+                transition: background-color 0.1s linear;
+                letter-spacing: 0.7px;
+                border: none;
+                animation: fade 0.6s ease-in-out 1.2s forwards;
+                cursor: pointer;
+            }
+
+            #input:focus {
+                background-color: rgba(255, 255, 255, 0.85);
+            }
+
+            .dot {
+                
+                height: 250px;
+                width: 250px;
+                background-color: #bbb;
+                border-radius: 50%;
+                display: inline-block;
+                text-align: center;
+                margin-left: 630px;
+                
+                
+            }
+
+            .input-circle{
+                margin-bottom: 200px;
+                
+            }
+            
+            span{
+                text-align: center;
+                
+            }
+
+            #text{
+                margin-top: 100px;
+                color: black;
+                font-family: 'Arial Narrow Bold';
+                font-size: x-large;
+            }
+
+            #level{
+                margin-left: 1400px;
+            }
+            
+            #lev{
+                
+                
+                font-family: helvetica;
+                margin-right: 50px;
+            }
+
+            #message{
+                text-align: center;
+                
+            }
+            
+
+        </style>
+        </head>
+    
+    <body>
+        <h1>
+            WORD BEATER
+        </h1>
+
+        
+
+        <div id="level">
+            <p id="lev">Difficulty</p>
+            <button id="easy">easy</button>
+            <button id="medium">medium</button>
+            <button id="hard">hard</button>
+        </div>
+
+        
+
+        <div id="left">
+            <div id="time">
+                <p id="countdown">Time Left</p>
+                <p id="sec"></p>
+            </div>
+        </div>
+
+        <p id="message" ></p>
+        
+
+        
+
+        <div id="right">
+            <div id="current">
+                <p id="currentscore">Score</p>
+                <p id="cscore">0</p>
+            </div>
+            <div id="high">
+                <p id="highscore">Your High Score</p>
+                <p id="hscore">0</p>
+            </div>
+        </div>
+
+        
+    
+
+        
+        <div class="input-circle">
+            <div id="circle">
+                <span class="dot">
+                    
+                    <p id="text">hello</p>
+    
+                </span>
+               
+    
+            </div><br>
+    
+            <div id="input-user">
+                <input id="input" type="text" placeholder="type the text here to begin....." spellcheck="false">
+            </div>
+       
+    </div>
+
+   
+
+    <script>
+
+
+       
+        window.addEventListener("load",init);
+
+        
+
+            
+        const levels = {
+            easy: 4,
+            medium: 3,
+            hard: 2
+        }
+
+       
+        
+        let currentLevel = levels.easy;
+        
+
+        let time = currentLevel;
+        let score = 0;
+        let highscore = 0;
+        let isplaying;
+
+
+       
+        const wordInput = document.querySelector("#input");
+        const currentWord = document.querySelector("#text");
+        const scoreDisplay = document.querySelector("#cscore");
+        const highScoreDisplay = document.querySelector("#hscore");
+        const timeDisplay = document.querySelector("#sec");
+        const seconds = document.querySelector("#sec");
+        const msg = document.querySelector("#message"); 
+        const easyBtn = document.querySelector('#easy');
+        const mediumBtn = document.querySelector('#medium');
+        const hardBtn = document.querySelector('#hard');
+                
+        
+        const words = [
+            "legion",
+            "lenevo",
+            "javascript",
+            "corona",
+            "ne=1zxt",
+            "short",
+            "nice",
+            "bot!#tle",
+            "full",
+            "soda",
+            "vast",
+            "@12glue",
+            "c@,lose",
+            "hurry",
+            "ro12bin",
+            "trace",
+            "rock",
+            "absent",
+            "co,.ver",
+            "note",
+            "burst",
+            "re45lax",
+            "group",
+            "sad",
+            "ro-,1b",
+            "yell",
+            "pop",
+            "mix",
+            "fi2@,x",
+            "hot",
+            "pi1,@n",
+            "h09./ll",
+            "wiry",
+            "dirt",
+
+        ];
+
+        function init(){
+
+            
+
+           showWord(words);
+
+           seconds.innerHTML = currentLevel;
+
+           wordInput.addEventListener("input", startMatch);
+
+           setInterval(countdown, 1000);
+
+           setInterval(checkStatus, 50);
+
+           
+
+           
+        }
+
+      
+
+        function showWord(words){
+            const random = Math.floor(Math.random()*words.length);
+            currentWord.innerHTML = words[random];
+        }
+
+        function startMatch(){
+            if(matchWords()){
+            isplaying = true;
+            time = currentLevel + 1;
+            showWord(words);
+            wordInput.value = "";
+            score++;
+            }
+
+            if(score === -1){
+                scoreDisplay.innerHTML = 0;
+
+            }else{
+            
+        scoreDisplay.innerHTML = score;
+            }
+
+            
+        }
+
+        function setlevel(e){
+            if(e.target === easyBtn){
+                currentLevel = levels.easy;
+            }else if(e.target === mediumBtn){
+                currentLevel = levels.medium;
+            }else if(e.target === hardBtn){
+                currentLevel = levels.hard;
+            }
+            console.log(currentLevel);
+            init()
+        }
+
+        function setHighScore(){
+            if(score > highscore){
+                highscore = score;
+                highScoreDisplay.innerHTML = highscore;
+
+            }
+            score = 0;
+            scoreDisplay.innerHTML = score;
+        }
+
+        
+
+       
+        
+
+        function matchWords(){
+
+            if(wordInput.value === currentWord.innerHTML){
+                    message.innerHTML ='<span style="color:green;"> CORRECT';
+                    return true;
+                }else{
+                    message.innerHTML = "";
+                    return false;
+                }
+
+        }
+
+
+
+        function countdown(){
+
+            if(time > 0){
+                time--;
+                
+
+            }else if(time === 0){
+                isplaying = false;
+                setHighScore();
+            }
+
+            timeDisplay.innerHTML = time;
+            
+        }
+
+
+
+        function checkStatus(){
+            if(!isplaying && time === 0){
+                message.innerHTML = '<span style="color:red;">Times upp!!! GAME OVER';
+                score = -1;
+
+               
+               
+                
+
+
+            }
+           
+        }
+
+        easyBtn.addEventListener('click', setlevel);
+        mediumBtn.addEventListener('click', setlevel);
+        hardBtn.addEventListener('click', setlevel);
+
+        
+
+        
+    
+         
+    
+
+    </script>
+
+    </body>
+
+    
+</html>
